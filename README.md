@@ -1,6 +1,6 @@
 # vibesWorldTime 🌍🕒
 
-A sleek, macOS-inspired **World Clock and Interactive Calendar** bar widget built for [Omarchy](https://omarchy.org).
+A sleek **World Clock and Interactive Calendar** bar widget built for [Omarchy](https://omarchy.org).
 
 Seamlessly track teammates and timezones across the globe right from your top menu bar, complete with instant city search, offline sunrise/sunset calculations, and color-coded business hour indicators.
 
