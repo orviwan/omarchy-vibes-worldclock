@@ -1,35 +1,63 @@
-# vibesWorldTime
+# vibesWorldTime 🌍🕒
 
-A macOS-inspired World Clock and interactive Calendar bar widget for [Omarchy](https://omarchy.org).
+A sleek, macOS-inspired **World Clock and Interactive Calendar** bar widget built for [Omarchy](https://omarchy.org).
 
-![vibesWorldTime](.github/screenshot.png)
+Seamlessly track teammates and timezones across the globe right from your top menu bar, complete with instant city search, offline sunrise/sunset calculations, and color-coded business hour indicators.
 
-## Features
+---
 
-- **Menu Bar Display:** Clean configurable format (defaults to `Tue 15 Sep 09:53`).
-- **Interactive Calendar:**
-  - Month view calendar with prev/next (`<` / `>`) navigation.
-  - Highlights today's date in Omarchy theme accent color.
-  - Optional ISO week numbers toggle (`Wk On / Wk Off`).
-  - Clicking month title jumps straight to today.
-- **World Clocks:**
-  - Card layout for each timezone:
-    - **Left:** Location Name + Day relationship (`Today`, `Yesterday`, `Tomorrow`).
-    - **Right:** Prominent Large Time + relative offset (`8 hours ahead`, `5 hours behind`, `Same time`).
-  - Default cities: **San Francisco**, **New York**, **London**, **Tokyo**.
-  - Automatically ordered from **oldest time to newest**.
-- **Location Management:**
-  - **Add Location:** Instant search across all 500+ worldwide IANA timezone cities (e.g. Sydney, Paris, Cairo, etc.).
-  - **Manage / Delete:** Remove locations easily.
-  - **Time Formats:** Toggle between 24-hour and 12-hour (AM/PM) display anytime.
+<p align="center">
+  <img src=".github/screenshot-main.png" alt="vibesWorldTime Main Popup" width="48%" />
+  <img src=".github/screenshot-settings.png" alt="vibesWorldTime Settings View" width="48%" />
+</p>
 
-## Installation
+---
+
+## ✨ Features
+
+- **Top Menu Bar Clock**: Clean date & time display (`Tue 15 Sep 09:53` by default). Right-click cycles standard format presets.
+- **Interactive Calendar**:
+  - Month view calendar with step navigation (`‹` and `›`).
+  - Highlights today's date in your Omarchy theme accent color.
+  - Softly dimmed surrounding days for context.
+  - Optional ISO week number column (`W`).
+  - Clicking the month title jumps immediately back to today.
+- **World Clocks**:
+  - **Left side**: Location Name + Day relationship (`Today`, `Yesterday`, `Tomorrow`).
+  - **Right side**: Prominent Large Time + relative offset (`8 hours ahead`, `5 hours behind`, `Same time`).
+  - Automatically sorted from **oldest time to newest**.
+- **Business Hours Status Indicator**:
+  - 🟢 **Green**: Working hours (**9:00 AM – 6:00 PM**)
+  - 🟡 **Yellow**: Evening winding down (**6:00 PM – 8:00 PM**)
+  - 🔴 **Red**: Out of hours / night (**8:00 PM – 9:00 AM**)
+- **Offline Astronomical Sunrise & Sunset**:
+  - Displays daily sunrise and sunset for each location (e.g. `↑ 06:33  ↓ 19:18`) computed directly using astronomical solar zenith formulas and system timezone coordinates—zero external API calls required!
+- **Dedicated Settings Panel (`⚙`)**:
+  - **Search & Add Cities**: Instant search across all 500+ standard IANA worldwide timezones and major cities (e.g., Sydney, Paris, Cairo, Tokyo, etc.).
+  - **Manage Locations**: Delete custom cities with one click (`✕`) or restore defaults (San Francisco, New York, London, Tokyo).
+  - **Time Format**: Switch between 24-Hour (`18:05`) and 12-Hour (`6:05 PM`).
+  - **First Day of Week**: Choose between **Monday** and **Sunday**.
+  - **ISO Week Numbers**: Toggle week numbers column on the calendar.
+  - **Sunrise / Sunset Toggle**: Turn sunrise & sunset display on or off.
+
+---
+
+## 💾 Configuration Storage
+
+All your locations and preferences are automatically persisted in:
+```text
+~/.config/omarchy/vibesWorldTime.json
+```
+
+---
+
+## 📦 Installation
 
 ```bash
 omarchy plugin add https://github.com/orviwan/omarchy-vibes-worldclock --enable
 ```
 
-Then add `"orviwan.vibesWorldTime"` to your `center` section in `~/.config/omarchy/shell.json`:
+Then add `"orviwan.vibesWorldTime"` to your `center` bar section in `~/.config/omarchy/shell.json`:
 
 ```json
 {
@@ -38,6 +66,13 @@ Then add `"orviwan.vibesWorldTime"` to your `center` section in `~/.config/omarc
 }
 ```
 
-## License
+Reload the shell to apply:
+```bash
+omarchy restart shell
+```
+
+---
+
+## 📄 License
 
 [MIT](LICENSE) © 2026 Jon Barlow

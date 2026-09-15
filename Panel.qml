@@ -214,7 +214,7 @@ Panel {
     centerOnBar: true
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(380))
-    contentHeight: panel.fittedContentHeight(mainContent.implicitHeight)
+    contentHeight: panel.fittedContentHeight(mainContent.implicitHeight + Style.space(16))
 
     PanelKeyCatcher {
       id: keyCatcher
@@ -426,7 +426,9 @@ Panel {
 
               Button {
                 text: root.timeFormat24h ? "Use 12h" : "Use 24h"
-                horizontalPadding: Style.space(10)
+                Layout.preferredWidth: Style.space(92)
+                Layout.alignment: Qt.AlignRight
+                horizontalPadding: Style.space(4)
                 verticalPadding: Style.space(3)
                 onClicked: root.setSetting("timeFormat24h", !root.timeFormat24h)
               }
@@ -456,7 +458,9 @@ Panel {
 
               Button {
                 text: root.firstDayOfWeek === "monday" ? "Set Sunday" : "Set Monday"
-                horizontalPadding: Style.space(10)
+                Layout.preferredWidth: Style.space(92)
+                Layout.alignment: Qt.AlignRight
+                horizontalPadding: Style.space(4)
                 verticalPadding: Style.space(3)
                 onClicked: root.setSetting("firstDayOfWeek", root.firstDayOfWeek === "monday" ? "sunday" : "monday")
               }
@@ -486,7 +490,9 @@ Panel {
 
               Button {
                 text: root.showWeekNumbers ? "Hide" : "Show"
-                horizontalPadding: Style.space(10)
+                Layout.preferredWidth: Style.space(92)
+                Layout.alignment: Qt.AlignRight
+                horizontalPadding: Style.space(4)
                 verticalPadding: Style.space(3)
                 onClicked: root.setSetting("showWeekNumbers", !root.showWeekNumbers)
               }
@@ -516,7 +522,9 @@ Panel {
 
               Button {
                 text: root.showSunriseSunset ? "Hide" : "Show"
-                horizontalPadding: Style.space(10)
+                Layout.preferredWidth: Style.space(92)
+                Layout.alignment: Qt.AlignRight
+                horizontalPadding: Style.space(4)
                 verticalPadding: Style.space(3)
                 onClicked: root.setSetting("showSunriseSunset", !root.showSunriseSunset)
               }
@@ -531,6 +539,11 @@ Panel {
               horizontalPadding: Style.space(8)
               verticalPadding: Style.space(4)
               onClicked: root.resetDefaults()
+            }
+
+            Item {
+              width: parent.width
+              height: Style.space(6)
             }
           }
 
