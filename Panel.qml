@@ -57,7 +57,6 @@ Panel {
 
   property bool settingsMode: false
   property bool searchMode: false
-  property bool editMode: false
   property var searchResults: []
 
   readonly property string helperScriptPath: Qt.resolvedUrl("worldtime.py").toString().replace("file://", "")
@@ -190,7 +189,6 @@ Panel {
   function close() {
     root.settingsMode = false
     root.searchMode = false
-    root.editMode = false
     root.searchResults = []
     root.controller.hide()
   }
@@ -215,8 +213,8 @@ Panel {
     open: root.opened
     centerOnBar: true
     focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(390))
-    contentHeight: panel.fittedContentHeight(mainContent.implicitHeight + Style.space(20))
+    contentWidth: panel.fittedContentWidth(Style.space(380))
+    contentHeight: panel.fittedContentHeight(mainContent.implicitHeight)
 
     PanelKeyCatcher {
       id: keyCatcher
@@ -236,7 +234,6 @@ Panel {
           id: mainContent
           width: scrollArea.width
           spacing: Style.space(8)
-          padding: Style.space(10)
 
           // ═══════════════════════════════════════════════════════════════════
           // VIEW A: SETTINGS PAGE
@@ -254,7 +251,10 @@ Panel {
                 text: "← Back"
                 horizontalPadding: Style.space(8)
                 verticalPadding: Style.space(3)
-                onClicked: root.settingsMode = false
+                onClicked: {
+                  root.settingsMode = false
+                  root.searchMode = false
+                }
               }
 
               Text {
@@ -272,7 +272,137 @@ Panel {
 
             PanelSeparator { width: parent.width }
 
-            // Setting 1: Time Format
+            // ── Section 1: Manage Locations ──────────────────────────────────
+            RowLayout {
+              width: parent.width
+
+              Text {
+                text: "LOCATIONS (" + root.worldClocks.length + ")"
+                font.family: root.contentFontFamily
+                font.pixelSize: Style.font.caption || 11
+                font.bold: true
+                color: root.mutedColor
+                Layout.fillWidth: true
+              }
+
+              Button {
+                text: root.searchMode ? "Cancel" : "+ Add City"
+                horizontalPadding: Style.space(8)
+                verticalPadding: Style.space(2)
+                onClicked: {
+                  root.searchMode = !root.searchMode
+                  if (root.searchMode) {
+                    searchField.text = ""
+                    searchField.forceActiveFocus()
+                  }
+                }
+              }
+            }
+
+            // Search box inside settings
+            Column {
+              visible: root.searchMode
+              width: parent.width
+              spacing: Style.space(4)
+
+              TextField {
+                id: searchField
+                width: parent.width
+                placeholderText: "Type city (e.g. Sydney, Berlin, Cairo)..."
+                onTextChanged: searchDebounce.restart()
+              }
+
+              Column {
+                width: parent.width
+                spacing: Style.space(2)
+
+                Repeater {
+                  model: root.searchResults
+
+                  Rectangle {
+                    id: resultItem
+                    required property var modelData
+                    width: parent.width
+                    height: Style.space(28)
+                    radius: Style.cornerRadius
+                    color: resultHover.containsMouse ? root.accentColor : Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.06)
+
+                    MouseArea {
+                      id: resultHover
+                      anchors.fill: parent
+                      hoverEnabled: true
+                      cursorShape: Qt.PointingHandCursor
+                      onClicked: root.addCity(resultItem.modelData.name, resultItem.modelData.tz)
+                    }
+
+                    Text {
+                      anchors.left: parent.left
+                      anchors.leftMargin: Style.space(8)
+                      anchors.verticalCenter: parent.verticalCenter
+                      text: resultItem.modelData.display
+                      font.family: root.contentFontFamily
+                      font.pixelSize: Style.font.body * 0.9
+                      color: resultHover.containsMouse ? Color.background : root.contentForeground
+                    }
+                  }
+                }
+              }
+            }
+
+            // List of configured cities with Delete buttons
+            Column {
+              width: parent.width
+              spacing: Style.space(3)
+
+              Repeater {
+                model: root.worldClocks
+
+                Rectangle {
+                  id: manageRow
+                  required property var modelData
+                  width: parent.width
+                  height: Style.space(32)
+                  radius: Style.cornerRadius
+                  color: Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.04)
+
+                  RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: Style.space(8)
+                    anchors.rightMargin: Style.space(8)
+
+                    Text {
+                      text: manageRow.modelData.name
+                      font.family: root.contentFontFamily
+                      font.pixelSize: Style.font.body * 0.95
+                      font.bold: true
+                      color: root.contentForeground
+                    }
+
+                    Text {
+                      text: manageRow.modelData.offset
+                      font.family: root.contentFontFamily
+                      font.pixelSize: Style.font.caption || 11
+                      color: root.mutedColor
+                      Layout.fillWidth: true
+                      horizontalAlignment: Text.AlignRight
+                      anchors.rightMargin: Style.space(8)
+                    }
+
+                    Button {
+                      text: "✕"
+                      horizontalPadding: Style.space(6)
+                      verticalPadding: Style.space(1)
+                      onClicked: root.deleteCity(manageRow.modelData.name)
+                    }
+                  }
+                }
+              }
+            }
+
+            PanelSeparator { width: parent.width }
+
+            // ── Section 2: Display Settings ──────────────────────────────────
+            // Setting: Time Format
             RowLayout {
               width: parent.width
 
@@ -282,12 +412,12 @@ Panel {
                 Text {
                   text: "Time Display Format"
                   font.family: root.contentFontFamily
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: Style.font.body * 0.95
                   font.bold: true
                   color: root.contentForeground
                 }
                 Text {
-                  text: root.timeFormat24h ? "Currently 24-Hour (18:05)" : "Currently 12-Hour (6:05 PM)"
+                  text: root.timeFormat24h ? "24-Hour (18:05)" : "12-Hour (6:05 PM)"
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.caption || 11
                   color: root.mutedColor
@@ -297,12 +427,12 @@ Panel {
               Button {
                 text: root.timeFormat24h ? "Use 12h" : "Use 24h"
                 horizontalPadding: Style.space(10)
-                verticalPadding: Style.space(4)
+                verticalPadding: Style.space(3)
                 onClicked: root.setSetting("timeFormat24h", !root.timeFormat24h)
               }
             }
 
-            // Setting 2: First Day of Week
+            // Setting: First Day of Week
             RowLayout {
               width: parent.width
 
@@ -312,12 +442,12 @@ Panel {
                 Text {
                   text: "First Day of Week"
                   font.family: root.contentFontFamily
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: Style.font.body * 0.95
                   font.bold: true
                   color: root.contentForeground
                 }
                 Text {
-                  text: root.firstDayOfWeek === "monday" ? "Calendar starts on Monday" : "Calendar starts on Sunday"
+                  text: root.firstDayOfWeek === "monday" ? "Starts on Monday" : "Starts on Sunday"
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.caption || 11
                   color: root.mutedColor
@@ -327,12 +457,12 @@ Panel {
               Button {
                 text: root.firstDayOfWeek === "monday" ? "Set Sunday" : "Set Monday"
                 horizontalPadding: Style.space(10)
-                verticalPadding: Style.space(4)
+                verticalPadding: Style.space(3)
                 onClicked: root.setSetting("firstDayOfWeek", root.firstDayOfWeek === "monday" ? "sunday" : "monday")
               }
             }
 
-            // Setting 3: Calendar Week Numbers
+            // Setting: Week Numbers
             RowLayout {
               width: parent.width
 
@@ -342,12 +472,12 @@ Panel {
                 Text {
                   text: "Show Week Numbers"
                   font.family: root.contentFontFamily
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: Style.font.body * 0.95
                   font.bold: true
                   color: root.contentForeground
                 }
                 Text {
-                  text: "Display ISO week number column in calendar"
+                  text: "Display ISO week number column"
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.caption || 11
                   color: root.mutedColor
@@ -357,12 +487,12 @@ Panel {
               Button {
                 text: root.showWeekNumbers ? "Hide" : "Show"
                 horizontalPadding: Style.space(10)
-                verticalPadding: Style.space(4)
+                verticalPadding: Style.space(3)
                 onClicked: root.setSetting("showWeekNumbers", !root.showWeekNumbers)
               }
             }
 
-            // Setting 4: Sunrise & Sunset
+            // Setting: Sunrise & Sunset
             RowLayout {
               width: parent.width
 
@@ -372,12 +502,12 @@ Panel {
                 Text {
                   text: "Show Sunrise & Sunset"
                   font.family: root.contentFontFamily
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: Style.font.body * 0.95
                   font.bold: true
                   color: root.contentForeground
                 }
                 Text {
-                  text: "Show daily sunrise and sunset for each city"
+                  text: "Show sunrise/sunset times under clocks"
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.caption || 11
                   color: root.mutedColor
@@ -387,14 +517,14 @@ Panel {
               Button {
                 text: root.showSunriseSunset ? "Hide" : "Show"
                 horizontalPadding: Style.space(10)
-                verticalPadding: Style.space(4)
+                verticalPadding: Style.space(3)
                 onClicked: root.setSetting("showSunriseSunset", !root.showSunriseSunset)
               }
             }
 
             PanelSeparator { width: parent.width }
 
-            // Reset locations button
+            // Restore defaults
             Button {
               text: "Restore Default Locations (SF, NY, London, Tokyo)"
               width: parent.width
@@ -410,9 +540,9 @@ Panel {
           Column {
             visible: !root.settingsMode
             width: parent.width
-            spacing: Style.space(8)
+            spacing: Style.space(6)
 
-            // ── 1. Calendar Header (Month Year <> + Actions) ────────────────
+            // ── 1. Calendar Header (Month Year <> + Settings) ───────────────
             RowLayout {
               width: parent.width
 
@@ -450,23 +580,8 @@ Panel {
                 }
 
                 Button {
-                  text: "+ City"
-                  horizontalPadding: Style.space(6)
-                  verticalPadding: Style.space(2)
-                  onClicked: {
-                    root.searchMode = !root.searchMode
-                    if (root.searchMode) {
-                      searchField.text = ""
-                      searchField.forceActiveFocus()
-                    } else {
-                      root.searchResults = []
-                    }
-                  }
-                }
-
-                Button {
                   text: "⚙"
-                  horizontalPadding: Style.space(6)
+                  horizontalPadding: Style.space(7)
                   verticalPadding: Style.space(2)
                   onClicked: root.settingsMode = true
                 }
@@ -476,7 +591,7 @@ Panel {
             // ── 2. Month Calendar Grid ──────────────────────────────────────
             Column {
               width: parent.width
-              spacing: Style.space(2)
+              spacing: Style.space(1)
 
               // Weekday headings
               Row {
@@ -558,10 +673,11 @@ Panel {
                         font.family: root.contentFontFamily
                         font.pixelSize: Style.font.body * 0.9
                         font.bold: modelData.today
+                        // Clearly visible grey for days outside the month:
                         color: modelData.today 
                           ? Color.background 
                           : (modelData.inMonth ? root.contentForeground : root.mutedColor)
-                        opacity: modelData.inMonth || modelData.today ? 1.0 : 0.35
+                        opacity: modelData.inMonth || modelData.today ? 1.0 : 0.75
                       }
                     }
                   }
@@ -572,58 +688,6 @@ Panel {
             // Tight separator below calendar
             PanelSeparator {
               width: parent.width
-            }
-
-            // ── Search / Add Location Box (collapsible) ──────────────────────
-            Column {
-              visible: root.searchMode
-              width: parent.width
-              spacing: Style.space(4)
-
-              TextField {
-                id: searchField
-                width: parent.width
-                placeholderText: "Search city (e.g. Sydney, Paris, Berlin)..."
-                onTextChanged: searchDebounce.restart()
-              }
-
-              Column {
-                width: parent.width
-                spacing: Style.space(2)
-
-                Repeater {
-                  model: root.searchResults
-
-                  Rectangle {
-                    id: resultItem
-                    required property var modelData
-                    width: parent.width
-                    height: Style.space(28)
-                    radius: Style.cornerRadius
-                    color: resultHover.containsMouse ? root.accentColor : Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.06)
-
-                    MouseArea {
-                      id: resultHover
-                      anchors.fill: parent
-                      hoverEnabled: true
-                      cursorShape: Qt.PointingHandCursor
-                      onClicked: root.addCity(resultItem.modelData.name, resultItem.modelData.tz)
-                    }
-
-                    Text {
-                      anchors.left: parent.left
-                      anchors.leftMargin: Style.space(8)
-                      anchors.verticalCenter: parent.verticalCenter
-                      text: resultItem.modelData.display
-                      font.family: root.contentFontFamily
-                      font.pixelSize: Style.font.body * 0.9
-                      color: resultHover.containsMouse ? Color.background : root.contentForeground
-                    }
-                  }
-                }
-              }
-
-              PanelSeparator { width: parent.width }
             }
 
             // ── 3. World Clocks List ─────────────────────────────────────────
@@ -669,15 +733,6 @@ Panel {
                       Layout.alignment: Qt.AlignVCenter
                     }
 
-                    // Delete button in edit mode
-                    Button {
-                      visible: root.editMode
-                      text: "✕"
-                      horizontalPadding: Style.space(6)
-                      verticalPadding: Style.space(2)
-                      onClicked: root.deleteCity(clockRow.modelData.name)
-                    }
-
                     // Left Column: Location Name + Today + Sunrise/Sunset
                     ColumnLayout {
                       spacing: 0
@@ -701,7 +756,6 @@ Panel {
                           color: root.mutedColor
                         }
 
-                        // Sunrise / Sunset times if enabled
                         Text {
                           visible: root.showSunriseSunset && clockRow.modelData.sunrise !== ""
                           text: "↑ " + clockRow.modelData.sunrise + "  ↓ " + clockRow.modelData.sunset
@@ -740,20 +794,6 @@ Panel {
                   }
                 }
               }
-            }
-
-            // Manage locations footer toggle
-            RowLayout {
-              width: parent.width
-
-              Button {
-                text: root.editMode ? "Done Editing" : "Manage Cities"
-                horizontalPadding: Style.space(8)
-                verticalPadding: Style.space(3)
-                onClicked: root.editMode = !root.editMode
-              }
-
-              Item { Layout.fillWidth: true }
             }
           }
         }
