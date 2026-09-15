@@ -63,7 +63,7 @@ omarchy plugin add https://github.com/orviwan/omarchy-vibes-worldclock --enable
 
 Open `~/.config/omarchy/shell.json`:
 
-1. Under `"bar"` → `"layout"` → `"center"`, replace the default `"omarchy.clock"` entry with `"orviwan.vibesWorldTime"`:
+1. Under `"bar"` → `"layout"` → `"center"`, replace the default `"omarchy.clock"` entry with `"orviwan.vibesworldtime"`:
 
 ```jsonc
       "center": [
@@ -72,7 +72,7 @@ Open `~/.config/omarchy/shell.json`:
         },
         // Replace "id": "omarchy.clock" with this:
         {
-          "id": "orviwan.vibesWorldTime",
+          "id": "orviwan.vibesworldtime",
           "format": "ddd d MMM HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm"
@@ -83,12 +83,12 @@ Open `~/.config/omarchy/shell.json`:
       ]
 ```
 
-2. *(Recommended)* Set `"centerAnchor"` under `"bar"` to `"orviwan.vibesWorldTime"` so the top bar centers neatly around the clock:
+2. *(Recommended)* Set `"centerAnchor"` under `"bar"` to `"orviwan.vibesworldtime"` so the top bar centers neatly around the clock:
 
 ```json
   "bar": {
     "position": "top",
-    "centerAnchor": "orviwan.vibesWorldTime",
+    "centerAnchor": "orviwan.vibesworldtime",
     ...
 ```
 

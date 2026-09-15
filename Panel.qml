@@ -8,8 +8,8 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "orviwan.vibesWorldTime"
-  ipcTarget: "orviwan.vibesWorldTime"
+  moduleName: "orviwan.vibesworldtime"
+  ipcTarget: "orviwan.vibesworldtime"
   manageIpc: false
 
   property var anchorItem: null

@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "orviwan.vibesWorldTime",
+  "id": "orviwan.vibesworldtime",
   "name": "vibesWorldTime",
   "version": "1.0.0",
   "author": "Jon Barlow",
+  "license": "MIT",
   "homepage": "https://github.com/orviwan/omarchy-vibes-worldclock",
   "description": "World clock and calendar widget for Omarchy",
   "kinds": [
