@@ -51,22 +51,51 @@ All your locations and preferences are automatically persisted in:
 
 ---
 
-## 📦 Installation
+## 📦 Installation & Replacing the Default Clock
+
+### 1. Install the Plugin
 
 ```bash
 omarchy plugin add https://github.com/orviwan/omarchy-vibes-worldclock --enable
 ```
 
-Then add `"orviwan.vibesWorldTime"` to your `center` bar section in `~/.config/omarchy/shell.json`:
+### 2. Replace the Default Clock in `shell.json`
 
-```json
-{
-  "id": "orviwan.vibesWorldTime",
-  "format": "ddd d MMM HH:mm"
-}
+Open `~/.config/omarchy/shell.json`:
+
+1. Under `"bar"` → `"layout"` → `"center"`, replace the default `"omarchy.clock"` entry with `"orviwan.vibesWorldTime"`:
+
+```jsonc
+      "center": [
+        {
+          "id": "omarchy.indicators"
+        },
+        // Replace "id": "omarchy.clock" with this:
+        {
+          "id": "orviwan.vibesWorldTime",
+          "format": "ddd d MMM HH:mm",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "verticalFormat": "HH\n—\nmm"
+        },
+        {
+          "id": "omarchy.keyboard-layout"
+        }
+      ]
 ```
 
-Reload the shell to apply:
+2. *(Recommended)* Set `"centerAnchor"` under `"bar"` to `"orviwan.vibesWorldTime"` so the top bar centers neatly around the clock:
+
+```json
+  "bar": {
+    "position": "top",
+    "centerAnchor": "orviwan.vibesWorldTime",
+    ...
+```
+
+### 3. Reload Shell
+
+Apply the changes immediately:
+
 ```bash
 omarchy restart shell
 ```
