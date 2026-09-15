@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "orviwan.vibesWorldTime",
+  "name": "vibesWorldTime",
+  "version": "1.0.0",
+  "author": "Jon Barlow",
+  "homepage": "https://github.com/orviwan/omarchy-vibes-worldclock",
+  "description": "World clock and calendar widget for Omarchy",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "vibesWorldTime",
+    "description": "World clock and calendar widget with customizable locations",
+    "category": "Time",
+    "defaultSection": "center",
+    "allowMultiple": false
+  }
+}
